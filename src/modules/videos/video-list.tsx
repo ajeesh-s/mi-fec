@@ -25,7 +25,7 @@ export const VideoList = ({ videos, deleteVideos, addEditVideo, globalFilterValu
         return (
             <div className="flex flex-wrap gap-2">
                 {rowData.categories.map((category: string, index: number) => (
-                    <Tag key={index} value={category} ></Tag>
+                    <Tag key={index} value={category} rounded></Tag>
                 ))}
             </div>
         );

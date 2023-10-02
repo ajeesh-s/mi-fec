@@ -6,6 +6,7 @@ import { VideoList } from "./video-list";
 import AddEditVideo from "./add-edit-video";
 import { getVideo, getVideos, inserUpdateVideoByAuthor } from "../../services/videos";
 import { getAuthors } from "../../services/authors";
+import { debounce } from "../../utilities/utils";
 
 const VideosConatiner: React.FC = () => {
     const { state } = useContext(AppContext);
@@ -98,11 +99,17 @@ const VideosConatiner: React.FC = () => {
             life: 2000,
         });
     };
-    const onGlobalFilterChange = async (text: string) => {
-        setGlobalFilterValue(text);
-        updateProcessedVideoList(await getAuthors(text), text);
 
-    }
+    const debouncedGlobalFilterChange = debounce(async (text: string) => {
+
+        await updateProcessedVideoList(await getAuthors(text), text);
+    }, 1000); // Adjust the debounce delay (in milliseconds) as needed
+
+    const handleGlobalFilterChange = (text: string) => {
+        setGlobalFilterValue(text);
+        debouncedGlobalFilterChange(text);
+    };
+
     return (
         <div>
             <Toast ref={toast} position="bottom-right" />
@@ -111,7 +118,7 @@ const VideosConatiner: React.FC = () => {
                 videos={processedVideos}
                 deleteVideos={confirmDeleteVideos}
                 addEditVideo={addEditVideoOnClick}
-                onGlobalFilterChange={onGlobalFilterChange}
+                onGlobalFilterChange={handleGlobalFilterChange}
             />{
                 showAddEditDialog && <AddEditVideo
                     authors={authors.current}
