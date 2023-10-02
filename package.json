@@ -1,13 +1,12 @@
 {
   "name": "mi-fec",
   "version": "0.1.0",
-  "private": true,
+  "private": true,  
   "scripts": {
     "start:server": "json-server --watch db.json --port 3001",
     "start:app": "react-scripts start --port 3000",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "cy:open": "cypress open"
+    "test": "react-scripts test"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
