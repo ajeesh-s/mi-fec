@@ -1,7 +1,27 @@
 import type { Author } from '../common/interfaces';
 
-export const getAuthors = async (): Promise<Author[]> => {
-  const response = await fetch(`${process.env.REACT_APP_API}/authors`);
+export const getAuthors = async (searchText: string = ""): Promise<Author[]> => {
+  try {
+    const response = await fetch(`${process.env.REACT_APP_API}/authors${searchText ? `?q=${searchText}` : ''}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch authors');
+    }
+    const data = await response.json();
+    return data as Author[];
+  } catch (error) {
+    throw error;
+  }
+};
 
-  return response.json() as unknown as Author[];
+export const getAuthor = async (authorId: number): Promise<Author> => {
+  try {
+    const response = await fetch(`${process.env.REACT_APP_API}/authors/${authorId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch author');
+    }
+    const data = await response.json();
+    return data as Author;
+  } catch (error) {
+    throw error;
+  }
 };

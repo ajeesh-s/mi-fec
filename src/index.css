@@ -23,3 +23,6 @@ body {
   flex-direction: column;
   min-height: 100vh;
 }
+.no-left-padding {
+  padding-left: 0 !important;
+}
