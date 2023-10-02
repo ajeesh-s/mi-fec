@@ -6,10 +6,12 @@ export const formatDateToYYYYMMDD = (date: Date): string => {
     const formattedDate = `${year}-${month}-${day}`;
     return formattedDate;
 }
-export const debounce = <T extends (...args: any[]) => void>(func: T, delay: number) => {
-    let timer: ReturnType<typeof setTimeout>;
-    return (...args: Parameters<T>) => {
+export const debounce = (func: Function, delay: number) => {
+    let timer: NodeJS.Timeout;
+    return (...args: any[]) => {
         clearTimeout(timer);
-        timer = setTimeout(() => func(...args), delay);
+        timer = setTimeout(() => {
+            func(...args);
+        }, delay);
     };
 };

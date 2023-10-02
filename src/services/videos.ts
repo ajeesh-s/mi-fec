@@ -1,35 +1,37 @@
 
 import { Author, Category, ProcessedVideo, Video } from '../common/interfaces';
 
-export const getVideos = (categories: Category[], authors: Author[]): ProcessedVideo[] => {
+export const getVideos = (categories: Category[], authors: Author[], text?: string): ProcessedVideo[] => {
   const videoList: ProcessedVideo[] = [];
   authors.forEach((author: Author) => {
     author.videos.forEach((video: Video) => {
-      const categoriesArray: string[] = video.catIds.map(catId => {
-        const category = categories.find((category: Category) => category.id === catId);
-        return category ? category.name : 'Unknown Category';
-      });
+      if (!text || (video.name.toLowerCase().includes(text.toLowerCase()))) {
+        const categoriesArray: string[] = video.catIds.map(catId => {
+          const category = categories.find((category: Category) => category.id === catId);
+          return category ? category.name : 'Unknown Category';
+        });
 
-      let highestQualityFormat = '';
-      let highestSize = -1;
+        let highestQualityFormat = '';
+        let highestSize = -1;
 
-      Object.entries(video.formats).forEach(([formatName, formatInfo]) => {
-        const { res, size } = formatInfo;
+        Object.entries(video.formats).forEach(([formatName, formatInfo]) => {
+          const { res, size } = formatInfo;
 
-        if (size > highestSize || (size === highestSize && res > highestQualityFormat.split(' ')[1])) {
-          highestQualityFormat = `${formatName} ${res}`;
-          highestSize = size;
-        }
-      });
+          if (size > highestSize || (size === highestSize && res > highestQualityFormat.split(' ')[1])) {
+            highestQualityFormat = `${formatName} ${res}`;
+            highestSize = size;
+          }
+        });
 
-      videoList.push({
-        id: video.id,
-        name: video.name,
-        author: { id: author.id, name: author.name },
-        categories: categoriesArray,
-        highestQualityFormat: highestQualityFormat,
-        releaseDate: video.releaseDate as string,
-      });
+        videoList.push({
+          id: video.id,
+          name: video.name,
+          author: { id: author.id, name: author.name },
+          categories: categoriesArray,
+          highestQualityFormat: highestQualityFormat,
+          releaseDate: video.releaseDate as string,
+        });
+      }
     });
   });
   return videoList;

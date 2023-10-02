@@ -79,7 +79,6 @@ export const VideoList = ({ videos, deleteVideos, addEditVideo, globalFilterValu
         <>
             <Card title="Manage videos">
                 <DataTable
-
                     value={videos}
                     sortField="name"
                     sortOrder={1}

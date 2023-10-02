@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AppContext } from "../../context/context";
 import { Toast } from "primereact/toast";
 import { Author, ProcessedVideo, Video } from "../../common/interfaces";
@@ -6,7 +6,6 @@ import { VideoList } from "./video-list";
 import AddEditVideo from "./add-edit-video";
 import { getVideo, getVideos, inserUpdateVideoByAuthor } from "../../services/videos";
 import { getAuthors } from "../../services/authors";
-import { debounce } from "../../utilities/utils";
 
 const VideosConatiner: React.FC = () => {
     const { state } = useContext(AppContext);
@@ -31,11 +30,12 @@ const VideosConatiner: React.FC = () => {
         getProcessedVideos();
     }, []);
 
-    const updateProcessedVideoList = async (authorsList: Author[] = authors.current, searchText: string = "") => {
+    const updateProcessedVideoList = async (searchText: string = "") => {
         if (!searchText) {
             setGlobalFilterValue(searchText);
         }
-        setProcessedVideos(getVideos(state.categories, authorsList));
+        setProcessedVideos(getVideos(state.categories, authors.current, searchText));
+
     }
 
     const confirmDeleteVideos = (videos: ProcessedVideo[]) => {
@@ -72,7 +72,6 @@ const VideosConatiner: React.FC = () => {
         const authorDetails: Author = authors.current.find((author: Author) => author.id === authorId) as Author;
         if (isAdd.current) {
             const maxId = processedVideos.length ? Math.max(...processedVideos.map((video) => video.id)) : 0;
-            debugger
             videoObj = { ...videoObj, id: maxId + 1 }
             authorDetails.videos.push(videoObj);
         } else {
@@ -100,15 +99,10 @@ const VideosConatiner: React.FC = () => {
         });
     };
 
-    const debouncedGlobalFilterChange = debounce(async (text: string) => {
-
-        await updateProcessedVideoList(await getAuthors(text), text);
-    }, 1000); // Adjust the debounce delay (in milliseconds) as needed
-
-    const handleGlobalFilterChange = (text: string) => {
+    const onGlobalFilterChange = (text: string) => {
         setGlobalFilterValue(text);
-        debouncedGlobalFilterChange(text);
-    };
+        updateProcessedVideoList(text);
+    }
 
     return (
         <div>
@@ -118,7 +112,7 @@ const VideosConatiner: React.FC = () => {
                 videos={processedVideos}
                 deleteVideos={confirmDeleteVideos}
                 addEditVideo={addEditVideoOnClick}
-                onGlobalFilterChange={handleGlobalFilterChange}
+                onGlobalFilterChange={onGlobalFilterChange}
             />{
                 showAddEditDialog && <AddEditVideo
                     authors={authors.current}

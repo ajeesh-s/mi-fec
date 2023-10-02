@@ -1,8 +1,8 @@
 import type { Author } from '../common/interfaces';
 
-export const getAuthors = async (searchText: string = ""): Promise<Author[]> => {
+export const getAuthors = async (searchText: string = "", signal?: AbortSignal): Promise<Author[]> => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_API}/authors${searchText ? `?q=${searchText}` : ''}`);
+    const response = await fetch(`${process.env.REACT_APP_API}/authors${searchText ? `?q=${searchText}` : ''}`, { signal });
     if (!response.ok) {
       throw new Error('Failed to fetch authors');
     }
